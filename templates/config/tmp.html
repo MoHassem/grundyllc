@@ -1,0 +1,238 @@
+{% load static %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-wrap -mx-4">
+        <div class="w-full md:w-2/3 px-4">
+            <h1 class="text-2xl font-bold mb-4">Store Window</h1>
+            <div class="flex flex-wrap -mx-4">
+                <div class="w-full sm:w-1/2 md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="{% static 'images/products/apple.jpeg' %}" alt="Apples" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h5 class="text-lg font-semibold">Apples</h5>
+                            <p class="text-gray-700">Price: R23.00</p>
+                            <input type="number" id="quantity-apples" name="quantity" value="1" min="1"
+                                       class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm">
+
+                            <button
+                                    class="btn btn-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline add-to-cart-btn"
+                                    data-product="apples"
+                                    data-price="23.00"
+                                    hx-post="{% url 'add-to-cart' %}"
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"product": "apples", "price": "23.00", "quantity": document.getElementById("quantity-apples").value}'
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% csrf_token %}
+                <div class="w-full sm:w-1/2 md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="{% static 'images/products/banana.jpeg' %}" alt="Bananas" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h5 class="text-lg font-semibold">Bananas</h5>
+                            <p class="text-gray-700">Price: R15.50</p>
+                            <input type="number" id="quantity-bananas" name="quantity" value="1" min="1"
+                                       class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm">
+                            <button
+                                    class="btn btn-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline add-to-cart-btn"
+                                    data-product="bananas"
+                                    data-price="15.50"
+                                    hx-post="{% url 'add-to-cart' %}"
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"product": "bananas", "price": "15.50, "quantity": document.getElementById("quantity-bananas").value"}'
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-1/2 md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="{% static 'images/products/orange.jpeg' %}" alt="Oranges" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h5 class="text-lg font-semibold">Oranges</h5>
+                            <p class="text-gray-700">Price: R16.45</p>
+                            <input type="number" id="quantity-oranges" name="quantity" value="1" min="1"
+                                       class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm">
+                            <button
+                                    class="btn btn-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline add-to-cart-btn"
+                                    data-product="oranges"
+                                    data-price="16.45"
+                                    hx-post="{% url 'add-to-cart' %}"
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"product": "oranges", "price": "16.45", "quantity": document.getElementById("quantity-oranges").value}'
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-1/2 md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="{% static 'images/products/potato.jpeg' %}" alt="Potatoes" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h5 class="text-lg font-semibold">Potatoes</h5>
+                            <p class="text-gray-700">Price: R10.99</p>
+                            <input type="number" id="quantity-potatoes" name="quantity" value="1" min="1"
+                                       class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm">
+                            <button
+                                    class="btn btn-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline add-to-cart-btn"
+                                    data-product="potatoes"
+                                    data-price="10.99"
+                                    hx-post="{% url 'add-to-cart' %}"
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"product": "potatoes", "price": "10.99", "quantity": document.getElementById("quantity-potatoes").value}'
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-1/2 md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="{% static 'images/products/tomato.jpeg' %}" alt="Tomatoes" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h5 class="text-lg font-semibold">Tomatoes</h5>
+                            <p class="text-gray-700">Price: R13.65</p>
+                            <input type="number" id="quantity-tomatoes" name="quantity" value="1" min="1"
+                                       class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm">
+                            <button
+                                    class="btn btn-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline add-to-cart-btn"
+                                    data-product="tomatoes"
+                                    data-price="13.65"
+                                    hx-post="{% url 'add-to-cart' %}"
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"product": "tomatoes", "price": "13.65", "quantity": document.getElementById("quantity-tomatoes").value}'
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-1/2 md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="{% static 'images/products/Onionr.jpeg' %}" alt="Onions" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h5 class="text-lg font-semibold">Onions</h5>
+                            <p class="text-gray-700">Price: R12.35</p>
+                            <input type="number" id="quantity-onions" name="quantity" value="1" min="1"
+                                       class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm">
+                            <button
+                                    class="btn btn-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline add-to-cart-btn"
+                                    data-product="onions"
+                                    data-price="12.35"
+                                    hx-post="{% url 'add-to-cart' %}"
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"product": "onions", "price": "12.35, "quantity": document.getElementById("quantity-onions").value"}'
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-1/2 md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="{% static 'images/products/basil.jpeg' %}" alt="Basil" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h5 class="text-lg font-semibold">Basil</h5>
+                            <p class="text-gray-700">Price: R5.00</p>
+                            <input type="number" id="quantity-basil" name="quantity" value="1" min="1"
+                                       class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm">
+                            <button
+                                    class="btn btn-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline add-to-cart-btn"
+                                    data-product="basil"
+                                    data-price="5.00"
+                                    hx-post="{% url 'add-to-cart' %}"
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"product": "basil", "price": "5.00", "quantity": document.getElementById("quantity-basil").value}'
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-1/2 md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="{% static 'images/products/mint.jpeg' %}" alt="Mint" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h5 class="text-lg font-semibold">Mint</h5>
+                            <p class="text-gray-700">Price: R3.65</p>
+                            <input type="number" id="quantity-mint" name="quantity" value="1" min="1"
+                                       class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm">
+                            <button
+                                    class="btn btn-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline add-to-cart-btn"
+                                    data-product="mint"
+                                    data-price="3.65"
+                                    hx-post="{% url 'add-to-cart' %}"
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"product": "mint", "price": "3.65", "quantity": document.getElementById("quantity-mint").value}'
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-1/2 md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="{% static 'images/products/rosemary.jpeg' %}" alt="Rosemary" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h5 class="text-lg font-semibold">Rosemary</h5>
+                            <p class="text-gray-700">Price: R16.75</p>
+                            <input type="number" id="quantity-mint" name="quantity" value="1" min="1"
+                                       class="shadow appearance-none border rounded w-16 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm">
+                            <button
+                                    class="btn btn-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline add-to-cart-btn"
+                                    data-product="rosemary"
+                                    data-price="16.75"
+                                    hx-post="{% url 'add-to-cart' %}"
+                                    hx-target="#cart-items"
+                                    hx-swap="innerHTML"
+                                    hx-vals='{"product": "rosemary", "price": "16.75", "quantity": document.getElementById("quantity-rosemary").value}'
+                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full md:w-1/3 px-4">
+            <div class="bg-gray-100 rounded-lg p-4">
+                <h2 class="text-xl font-bold mb-4">Cart</h2>
+                <ul id="cart-items">
+                    <li><p class="font-semibold">Cart empty</p></li>
+                </ul>
+                <p class="font-semibold">Total: R<span id="cart-total">0.00</span></p>
+                <button class="btn btn-sm bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Checkout</button>
+            </div>
+        </div>
+    </div>
+</div>
+

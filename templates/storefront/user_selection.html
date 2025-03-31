@@ -1,0 +1,15 @@
+<p>user login simulator</p>
+<form hx-post="{% url 'sim-login' %}", ht-swap="innerHTML", hx-target="#user-login">
+    {% csrf_token %}
+    <label for="user_dropdown">Select User:</label>
+    <select name="user_id" id="user_dropdown">
+        {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+        {% endfor %}
+    </select><br>
+    <button type="submit" class="btn btn-sm bg-green-500 hover:bg-green-700 text-white font-bold my-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline">Simulate Login</button>
+</form>
+<p class="font-bold">Current User</p>
+<p>{{ user_name }}</p>
+<p>{{ address }}</p>
+

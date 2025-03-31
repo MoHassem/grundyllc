@@ -1,0 +1,50 @@
+<h2 class="text-xl font-bold">{{ store_name }} Cart</h2>
+{% if cart  %}
+    <table>
+        <thead>
+            <tr>
+                <th class="px-4 py-2">Product</th>
+                <th class="px-4 py-2">Quantity</th>
+                <th class="px-4 py-2">Price</th>
+            </tr>
+        </thead>
+        <tbody id="cart-items">
+                {% for item in cart %}
+                    <tr>
+                        <td>{{ item.product }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td class="text-right">{{ item.price }}</td>
+                    </tr>
+               {% endfor %}
+                <tr>
+                    <td class=>Delivery</td>
+                    <td></td>
+                    <td class="text-right p-2">{{ delivery }}</td>
+                </tr>
+                <tr>
+                    <td class="font-bold">Total</td>
+                    <td></td>
+                    <td class="text-right font-bold p-2">{{ total }}</td>
+                </tr>
+        </tbody>
+    </table>
+{% else %}
+    <p>Your cart is empty</p>
+{% endif %}
+
+{% if cart and checkout == 'no' %}
+        <button class="btn btn-sm bg-green-500 hover:bg-green-700 text-white font-bold my-4 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                       hx-post="{% url 'cart-checkout' %}"
+                       hx-target="#cart-items"
+                       hx-swap="innerHTML"
+                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        >Checkout</button>
+        <button class="btn btn-sm bg-green-500 hover:bg-green-700 text-white font-bold my-4 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                       hx-post="{% url 'cart-cancel' %}"
+                       hx-target="#cart-items"
+                       hx-swap="innerHTML"
+                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        >Cancel Cart</button>
+{% endif %}
+
+{% include 'storefront/checkout.html' %}

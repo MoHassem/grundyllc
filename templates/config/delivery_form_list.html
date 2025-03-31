@@ -1,0 +1,59 @@
+<form class="mb-4" hx-post="{% url 'delivery-add' %}" hx-swap="innerHTML" hx-target="#delivery-form" >
+    {% csrf_token %}
+    <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ dp_form.name.id_for_label }}">
+            {{ dp_form.name.label }}
+        </label>
+        {{ dp_form.name }}
+    </div>
+    <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ dp_form.settlement_bank.id_for_label }}">
+            {{ dp_form.settlement_bank.label }}
+        </label>
+        {{ dp_form.settlement_bank }}
+    </div>
+    <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ dp_form.account_number.id_for_label }}">
+            {{ dp_form.account_number.label }}
+        </label>
+        {{ dp_form.account_number }}
+    </div>
+    <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ dp_form.is_active.id_for_label }}">
+            {{ dp_form.is_active.label }}
+        </label>
+        {{ dp_form.is_active }}
+    </div>
+    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Save Partner
+    </button>
+</form>
+
+<h2 class="text-xl font-semibold mb-2">Existing Delivery Partners</h2>
+<div class="overflow-x-auto">
+    <table class="min-w-full bg-white border border-gray-200">
+        <thead>
+        <tr>
+            <th class="px-4 py-2 border-b">Name</th>
+            <th class="px-4 py-2 border-b">Bank Code</th>
+            <th class="px-4 py-2 border-b">Account Number</th>
+            <th class="px-4 py-2 border-b">Active</th>
+            <th class="px-4 py-2 border-b">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for partner in dp_list %}
+            <tr>
+                <td class="px-4 py-2 border-b">{{ partner.name }}</td>
+                <td class="px-4 py-2 border-b">{{ partner.settlement_bank }}</td>
+                <td class="px-4 py-2 border-b">{{ partner.account_number }}</td>
+                <td class="px-4 py-2 border-b">{{ partner.is_active }}</td>
+                <td class="px-4 py-2 border-b">
+                    <a href="{% url 'delivery-edit' partner.id %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-xs">Edit</a>
+                    <a href="{% url 'delivery-delete' partner.id %}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-xs">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,86 @@
+<div id="store-form" class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+   <h2 class="text-xl font-semibold mb-4">Add/Edit Store</h2>
+   {% if message != '' and dp_message is not None %}
+       <div class="text-green-500 bg-green-100 border border-green-400 rounded p-4 my-4">
+           <p>{{ message }}</p>
+       </div>
+   {% else %}
+       <div class="text-gray-500 bg-gray-100 border border-green-400 rounded p-4 my-4">
+            <p>Capture Store details below.</p>
+       </div>
+   {% endif %}
+   <div id="store-form">
+        <form hx-post="{% url 'store-create' %}" hx-target="#store-form" hx-swap="innerHTML">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.business_name.id_for_label }}">
+                    {{ form.business_name.label }}
+                </label>
+                {{ form.business_name }}
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.settlement_bank.id_for_label }}">
+                    {{ form.settlement_bank.label }}
+                </label>
+                {{ form.settlement_bank }}
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.account_number.id_for_label }}">
+                    {{ form.account_number.label }}
+                </label>
+                {{ form.account_number }}
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.percentage_charge.id_for_label }}">
+                    {{ form.percentage_charge.label }}
+                </label>
+                {{ form.percentage_charge }}
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.percentage_charge.id_for_label }}">
+                    {{ form.description.label }}
+                </label>
+                {{ form.description }}
+            </div>
+            <div class="flex items-center justify-between">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    Save Store
+                </button>
+            </div>
+            <h2 class="text-xl font-semibold mb-4">Existing Stores</h2>
+            <table class="table-auto w-full">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Business Name</th>
+                        <th class="px-4 py-2">Settlement Bank</th>
+                        <th class="px-4 py-2">Account Number</th>
+                        <th class="px-4 py-2">Percentage Charge</th>
+                        <th class="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for store in stores %}
+                    <tr>
+                        <td class="px-4 py-2">{{ store.business_name }}</td>
+                        <td class="px-4 py-2">{{ store.settlement_bank }}</td>
+                        <td class="px-4 py-2">{{ store.account_number }}</td>
+                        <td class="px-4 py-2">{{ store.percentage_charge }}</td>
+                        <td class="px-4 py-2">
+                            <button hx-post="{% url 'store-update' store.id %}" hx-target="#store-form" hx-swap="innerHTML" class="btn-sm bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline">
+                                Edit
+                            </button>
+                            <button hx-post="{% url 'store-delete' store.id %}" hx-target="#store-form" hx-swap="innerHTML" class="btn-sm bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td class="px-4 py-2" colspan="5">No stores found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+       </form>
+   </div>
+</div>
