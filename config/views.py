@@ -62,12 +62,7 @@ def delivery_partner_add(request):
         form = DeliveryPartnerForm(request.POST)
         if form.is_valid():
             dp_rec = form.save(commit=False)
-            dp_rec.subaccount_code = psa.register_account(
-                name=dp_rec.name,
-                bank_id=dp_rec.settlement_bank,
-                account=dp_rec.account_number,
-                percentage=0.00,
-            )
+            dp_rec.subaccount_code = "Not Applicable"
             dp_rec.save()
             dp_message = 'Delivery partner added successfully.'
     delivery_partner_list = DeliveryPartner.objects.all()

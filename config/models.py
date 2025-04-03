@@ -126,3 +126,43 @@ class Store(models.Model):
     def __str__(self):
         return f"{self.business_name} - {self.settlement_bank} | {self.account_number}"
 
+
+class DeliveryCharges(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Transferred', 'Transferred'),
+        ('Failed', 'Failed'),
+    ]
+    order_number = models.CharField(
+        max_length=100,
+        help_text="Order number"
+    )
+    order_date = models.DateField(
+        auto_now_add=True,
+    )
+    delivery_partner = models.ForeignKey(
+        DeliveryPartner,
+        on_delete=models.CASCADE,
+        help_text="Delivery partner"
+    )
+    status = models.CharField(
+        max_length=15,
+        choices=STATUS_CHOICES,
+        default='Pending',
+        help_text="Status of the delivery charge"
+    )
+    user_Name = models.CharField(
+        max_length=100,
+        help_text="User name"
+    )
+    distance = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text="Distance traveled in km"
+    )
+    total_amount = models.IntegerField(
+        help_text="Order Total in cents"
+    )
+    delivery_charge = models.IntegerField(
+        help_text="Delivery charge in cents"
+    )

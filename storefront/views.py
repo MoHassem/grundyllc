@@ -1,6 +1,8 @@
 import random
 from decimal import Decimal
 
+from django.db.models import UUIDField
+
 import storefront.utilities as ut
 
 from django.shortcuts import render
@@ -8,7 +10,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.urls import reverse
 
-from config.models import StorefrontConfiguration, Store, DeliveryPartner
+from config.models import StorefrontConfiguration, Store, DeliveryPartner, DeliveryCharges
 from paystack.payment import initialise_payment, verify_payment
 from storefront.sessionvars import SessionVars
 from storefront.sessionvars import get_session_vars, save_session_vars, clear_session_vars
@@ -18,13 +20,13 @@ from storefront.sessionvars import get_session_vars, save_session_vars, clear_se
 def index(request):
 
     sv: SessionVars = get_session_vars(request)
-    sv.shopping_store_total = ut.get_cart_total(sv.shopping_cart)
+    sv.shopping_cart_total_cents = ut.get_cart_total(sv.shopping_cart)
 
     context = {
         'cart': ut.get_printable_cart(sv.shopping_cart),
-        'total': f'R{sv.shopping_store_total:.2f}',
+        'total': f'R{sv.shopping_cart_total_cents/100:.2f}',
         'checkout': 'yes' if sv.isCheckout else 'no',
-        'delivery': f'R{sv.delivery_charge:.2f}',
+        'delivery': f'R{sv.delivery_charge_cents/100:.2f}',
         'user_name': ut.users[sv.user_id]['name'],
         'address': ut.users[sv.user_id]['address'],
         'store_name': ut.get_store_name(sv.shopping_store),
@@ -39,45 +41,39 @@ def add_to_cart(request):
     message = ''
     if not sv.isCheckout:
         if request.method == 'POST':
-            item_store = request.POST.get('store')
+            product = request.POST.get('product')
+            price = float(request.POST.get('price'))
+            quantity = int(request.POST.get('quantity'))
+            store = request.POST.get('store')
 
-            if sv.shopping_store == '0':
-                sv.shopping_store = item_store
+            item_exists = False
+            for item in sv.shopping_cart:
+                if item['product'] == product:
+                    item['quantity'] += quantity
+                    item['total'] = item['price'] * item['quantity']
+                    item_exists = True
+                    message = f'Updated quantity of {item["quantity"]} for {item["product"]}.'
+                    break
 
-            if item_store == sv.shopping_store:
-                product = request.POST.get('product')
-                price = float(request.POST.get('price'))
-                quantity = int(request.POST.get('quantity'))
-                store = request.POST.get('store')
+            if not item_exists:
+                message = f'Added {product} to cart.'
+                sv.shopping_cart.append(
+                    {
+                        'store': store,
+                        'product': product,
+                        'price': price,
+                        'quantity': quantity,
+                        'total': price * quantity}
+                )
 
-                item_exists = False
-                for item in sv.shopping_cart:
-                    if item['product'] == product:
-                        item['quantity'] += quantity
-                        item_exists = True
-                        message = f'Updated quantity of {item["quantity"]} for {item["product"]}.'
-                        break
-
-                if not item_exists:
-                    message = f'Added {product} to cart.'
-                    sv.shopping_cart.append(
-                        {'store': store, 'product': product, 'price': price, 'quantity': quantity}
-                    )
-
-        if sv.delivery_charge == Decimal('0.00'):
-            sv.delivery_charge = Decimal(ut.calculate_delivery_charge(sv)).quantize(Decimal('.01'))
-
-        if not sv.delivery_partner_name:
-            sv.delivery_partner_id, sv.delivery_partner_name = ut.get_delivery_partner()
-
-        sv.shopping_store_total = Decimal(ut.get_cart_total(sv.shopping_cart)).quantize(Decimal('.01'))
+        sv.shopping_cart_total_cents = ut.get_cart_total(sv.shopping_cart)
         save_session_vars(request, sv)
 
         context = {
             'cart': ut.get_printable_cart(sv.shopping_cart),
-            'total': f'R{sv.shopping_store_total:.2f}',
+            'total': f'R{sv.shopping_cart_total_cents/100:.2f}',
             'checkout': 'yes' if sv.isCheckout else 'no',
-            'delivery': f'R{sv.delivery_charge:.2f}',
+            'delivery': f'R{sv.delivery_charge_cents/100:.2f}',
             'user_name': ut.users[sv.user_id]['name'],
             'address': ut.users[sv.user_id]['address'],
             'store_name': ut.get_store_name(sv.shopping_store),
@@ -91,13 +87,16 @@ def add_to_cart(request):
 def cart_checkout(request):
     sv: SessionVars = get_session_vars(request)
     sv.isCheckout = True
+    sv.delivery_charge_cents = ut.calculate_delivery_charge(sv)
     save_session_vars(request, sv)
+    checkout_total = f'R{(sv.shopping_cart_total_cents + sv.delivery_charge_cents)/100:.2f}'
 
     context = {
+        'checkout_total': checkout_total,
         'cart': ut.get_printable_cart(sv.shopping_cart),
-        'total': f'R{sv.shopping_store_total:.2f}',
+        'total': f'R{sv.shopping_cart_total_cents/100:.2f}',
         'checkout': 'yes' if sv.isCheckout else 'no',
-        'delivery': f'R{sv.delivery_charge:.2f}',
+        'delivery': f'R{sv.delivery_charge_cents/100:.2f}',
         'user_name': ut.users[sv.user_id]['name'],
         'address': ut.users[sv.user_id]['address'],
         'store_name': ut.get_store_name(sv.shopping_store),
@@ -112,9 +111,9 @@ def cart_cancel(request):
     save_session_vars(request, sv)
     context = {
         'cart': ut.get_printable_cart(sv.shopping_cart),
-        'total': f'R{sv.shopping_store_total:.2f}',
+        'total': f'R{sv.shopping_cart_total_cents/100:.2f}',
         'checkout': 'yes' if sv.isCheckout else 'no',
-        'delivery': f'R{sv.delivery_charge:.2f}',
+        'delivery': f'R{sv.delivery_charge_cents/100:.2f}',
         'user_name': ut.users[sv.user_id]['name'],
         'address': ut.users[sv.user_id]['address'],
         'store_name': ut.get_store_name(sv.shopping_store),
@@ -126,24 +125,25 @@ def cart_cancel(request):
 
 def checkout_pay(request):
     sv: SessionVars = get_session_vars(request)
-    my_share = int(sv.shopping_store_total_cents * 0.125)
-    store_total = sv.shopping_store_total_cents - my_share
-    store = Store.objects.filter(pk=int(sv.shopping_store)).first()
+    st_totals: dict[str: ut.StoreTotal] = ut.get_store_totals(sv.shopping_cart)
 
-    delivery_sub_account = ut.get_delivery_partner_account_code(sv.delivery_partner_id)
-    success_url = request.build_absolute_uri(reverse('payment-verify'))
-    cancel_url = request.build_absolute_uri(reverse('payment-cancel'))
-#
-    p_data = initialise_payment(
-        customer_email=ut.users[sv.user_id]['email'],
-        total_amount=sv.shopping_store_total_cents + sv.delivery_charge_cents,
-        store_subaccount=store.subaccount_code,
-        store_amount=store_total,
-        delivery_subaccount=delivery_sub_account,
-        delivery_amount=sv.delivery_charge_cents,
-        callback_url=success_url,
-        metadata={'cancel_action': cancel_url}
+    sv.delivery_partner_id, sv.delivery_partner_name = ut.get_delivery_partner()
+    partner = DeliveryPartner.objects.get(pk=sv.delivery_partner_id)
+
+    # Create a new entry in the DeliveryCharges model
+    DeliveryCharges.objects.create(
+        order_number=UUIDField(default=random.randint(1000000000, 9999999999)),
+        user_Name=ut.users[sv.user_id]['name'],
+        distance=ut.users[sv.user_id]['distance'],
+        total_amount=sv.shopping_cart_total_cents,
+        delivery_charge=sv.delivery_charge_cents,
+        delivery_partner=partner,
     )
+
+    success_url = request.build_absolute_uri(reverse('payment-verify'))
+    meta_data = {"cancel_action": request.build_absolute_uri(reverse('payment-cancel'))}
+#
+    p_data = initialise_payment(sv, st_totals, success_url, meta_data)
 
     if p_data and 'authorization_url' in p_data:
         request.session['p_data'] = p_data
@@ -154,9 +154,9 @@ def checkout_pay(request):
 
     context = {
         'cart': ut.get_printable_cart(sv.shopping_cart),
-        'total': f'R{sv.shopping_store_total:.2f}',
+        'total': f'R{sv.shopping_cart_total_cents/100:.2f}',
         'checkout': 'yes' if sv.isCheckout else 'no',
-        'delivery': f'R{sv.delivery_charge:.2f}',
+        'delivery': f'R{sv.delivery_charge_cents/100:.2f}',
         'user_name': ut.users[sv.user_id]['name'],
         'address': ut.users[sv.user_id]['address'],
         'store_name': ut.get_store_name(sv.shopping_store),
@@ -181,9 +181,9 @@ def payment_verify(request):
 
     context = {
         'cart': ut.get_printable_cart(sv.shopping_cart),
-        'total': f'R{sv.shopping_store_total:.2f}',
+        'total': f'R{sv.shopping_cart_total_cents/100:.2f}',
         'checkout': 'yes' if sv.isCheckout else 'no',
-        'delivery': f'R{sv.delivery_charge:.2f}',
+        'delivery': f'R{sv.delivery_charge_cents/100:.2f}',
         'user_name': ut.users[sv.user_id]['name'],
         'address': ut.users[sv.user_id]['address'],
         'store_name': ut.get_store_name(sv.shopping_store),
@@ -200,9 +200,9 @@ def checkout_cancel(request):
 
     context = {
         'cart': ut.get_printable_cart(sv.shopping_cart),
-        'total': f'R{sv.shopping_store_total:.2f}',
+        'total': f'R{sv.shopping_cart_total_cents/100:.2f}',
         'checkout': 'yes' if sv.isCheckout else 'no',
-        'delivery': f'R{sv.delivery_charge:.2f}',
+        'delivery': f'R{sv.delivery_charge_cents/100:.2f}',
         'user_name': ut.users[sv.user_id]['name'],
         'address': ut.users[sv.user_id]['address'],
         'store_name': ut.get_store_name(sv.shopping_store),
@@ -219,9 +219,9 @@ def payment_cancel(request):
 
     context = {
         'cart': ut.get_printable_cart(sv.shopping_cart),
-        'total': f'R{sv.shopping_store_total:.2f}',
+        'total': f'R{sv.shopping_cart_total_cents/100:.2f}',
         'checkout': 'yes' if sv.isCheckout else 'no',
-        'delivery': f'R{sv.delivery_charge:.2f}',
+        'delivery': f'R{sv.delivery_charge_cents/100:.2f}',
         'user_name': ut.users[sv.user_id]['name'],
         'address': ut.users[sv.user_id]['address'],
         'store_name': ut.get_store_name(sv.shopping_store),

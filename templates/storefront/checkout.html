@@ -4,12 +4,16 @@
             <table>
                 <tbody>
                     <tr>
-                        <td class="p-2">Cart total</td>
-                        <td class="p-2">{{ total }}</td>
+                        <td class="p-2 text-sm">Cart total</td>
+                        <td class="p-2 text-sm text-right">{{ total }}</td>
                     </tr>
                     <tr>
-                        <td class="p-2">Delivery ({{ delivery_partner }})</td>
-                        <td class="p-2">{{ delivery }}</td>
+                        <td class="p-2 text-sm">Delivery Charge</td>
+                        <td class="p-2 text-sm text-right">{{ delivery }}</td>
+                    </tr>
+                    <tr>
+                        <td class="p-2 text-sm">Total</td>
+                        <td class="p-2 text-sm text-right">{{ checkout_total }}</td>
                     </tr>
                 </tbody>
             </table>

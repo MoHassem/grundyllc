@@ -7,28 +7,26 @@
     <table>
         <thead>
             <tr>
-                <th class="px-4 py-2">Product</th>
-                <th class="px-4 py-2">Quantity</th>
-                <th class="px-4 py-2">Price</th>
+                <th class="p-2 text-sm">Product</th>
+                <th class="p-2 text-sm">Quantity</th>
+                <th class="p-2 text-sm">Price</th>
+                <th class="p-2 text-sm">Total</th>
             </tr>
         </thead>
         <tbody id="cart-items">
                 {% for item in cart %}
                     <tr>
-                        <td>{{ item.product }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td class="text-right">{{ item.price }}</td>
+                        <td class="p-2 text-sm">{{ item.product }}</td>
+                        <td class="p-2 text-sm text-right">{{ item.quantity }}</td>
+                        <td class="p-2 text-sm text-right">{{ item.price }}</td>
+                        <td class="p-2 text-sm text-right">{{ item.total }}</td>
                     </tr>
                {% endfor %}
                 <tr>
-                    <td class=>Delivery</td>
+                    <td class="p-2 font-bold text-sm">Total</td>
                     <td></td>
-                    <td class="text-right">{{ delivery }}</td>
-                </tr>
-                <tr>
-                    <td class="font-bold">Total</td>
                     <td></td>
-                    <td class="text-right font-bold">{{ total }}</td>
+                    <td class="p-2 text-sm text-right font-bold">{{ total }}</td>
                 </tr>
         </tbody>
     </table>
