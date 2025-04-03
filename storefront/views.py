@@ -48,6 +48,7 @@ def add_to_cart(request):
                 product = request.POST.get('product')
                 price = float(request.POST.get('price'))
                 quantity = int(request.POST.get('quantity'))
+                store = request.POST.get('store')
 
                 item_exists = False
                 for item in sv.shopping_cart:
@@ -60,7 +61,7 @@ def add_to_cart(request):
                 if not item_exists:
                     message = f'Added {product} to cart.'
                     sv.shopping_cart.append(
-                        {'product': product, 'price': price, 'quantity': quantity}
+                        {'store': store, 'product': product, 'price': price, 'quantity': quantity}
                     )
 
         if sv.delivery_charge == Decimal('0.00'):
