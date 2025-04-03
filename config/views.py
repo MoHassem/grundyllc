@@ -7,6 +7,7 @@ import paystack.sub_accounts as psa
 from .forms import StorefrontConfigurationForm, DeliveryPartnerForm, StoreForm
 from .models import StorefrontConfiguration, DeliveryPartner, Store
 
+# this is the initial view to setup the store front configuration
 def config_view(request):
     create_default_config(pk=1)
     storefront_config = get_object_or_404(StorefrontConfiguration, pk=1)
@@ -16,7 +17,7 @@ def config_view(request):
     }
     return render(request, 'config/config.html', context)
 
-
+# update the configuration
 def config_update(request, pk):
     msg = ''
     storefront_config = get_object_or_404(StorefrontConfiguration, pk=pk)
@@ -35,11 +36,12 @@ def config_update(request, pk):
     template = loader.get_template('config/config_form.html')
     return HttpResponse(template.render(context, request))
 
-
+# this creates a default config if the config does not exist
 def create_default_config(pk: int):
     if not StorefrontConfiguration.objects.filter(pk=pk).exists():
         StorefrontConfiguration.objects.create()
 
+# this displays the delivery partners
 def delivery_partner_view(request):
     delivery_partner_form = DeliveryPartnerForm()
     delivery_partner_list = DeliveryPartner.objects.all()
@@ -52,6 +54,7 @@ def delivery_partner_view(request):
     template = loader.get_template('config/delivery_partner.html')
     return HttpResponse(template.render(context, request))
 
+# this adds a delivery partner and creates a subaccount for the delivery partner and saves the subaccount code
 def delivery_partner_add(request):
     dp_message = ''
     form = DeliveryPartnerForm()
@@ -76,6 +79,7 @@ def delivery_partner_add(request):
     template = loader.get_template('config/delivery_form_list.html')
     return HttpResponse(template.render(context, request))
 
+# edit a delivery partner (we can only change the name and description on the subaccount)
 def delivery_partner_edit(request, pk):
     dp = DeliveryPartner.objects.get(pk=pk)
     form = DeliveryPartnerForm(instance=dp)
@@ -88,6 +92,7 @@ def delivery_partner_edit(request, pk):
     template = loader.get_template('config/delivery_form_list.html')
     return HttpResponse(template.render(context, request))
 
+# delete a delivery partner (subaccount must be deleted on the platform)
 def delivery_partner_delete(request, pk):
     dp = DeliveryPartner.objects.get(pk=pk)
     dp.delete()
@@ -101,7 +106,7 @@ def delivery_partner_delete(request, pk):
     template = loader.get_template('config/delivery_form_list.html')
     return HttpResponse(template.render(context, request))
 
-
+# list all the stores we have on the store front
 def store_list(request):
     form = StoreForm()
     stores = Store.objects.all()
@@ -115,7 +120,7 @@ def store_list(request):
 
     return render(request, 'config/storemanager.html', context)
 
-
+# create a new store and associated sub account
 def store_create(request):
     message = ''
     if request.method == 'POST':
@@ -144,6 +149,7 @@ def store_create(request):
     template = loader.get_template('config/store_form.html')  # Template for rendering the store form
     return HttpResponse(template.render(context, request))
 
+# update a store record
 def store_update(request, pk):
     message = ''
     store = get_object_or_404(Store, pk=pk)
@@ -172,6 +178,7 @@ def store_update(request, pk):
     template = loader.get_template('config/store_form.html')
     return HttpResponse(template.render(context, request))
 
+# delete a store record (subaccount to be deleted manually)
 def store_delete(request, pk):
     store = Store.objects.get(pk=pk)
     store.delete()

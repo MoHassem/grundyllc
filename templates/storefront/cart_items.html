@@ -1,4 +1,8 @@
 <h2 class="text-xl font-bold">{{ store_name }} Cart</h2>
+<div class="text-green-500 bg-green-100 border border-green-400 rounded p-4 mb-4">
+    <p>{{ message }}</p>
+</div>
+
 {% if cart  %}
     <table>
         <thead>
@@ -19,12 +23,12 @@
                 <tr>
                     <td class=>Delivery</td>
                     <td></td>
-                    <td class="text-right p-2">{{ delivery }}</td>
+                    <td class="text-right">{{ delivery }}</td>
                 </tr>
                 <tr>
                     <td class="font-bold">Total</td>
                     <td></td>
-                    <td class="text-right font-bold p-2">{{ total }}</td>
+                    <td class="text-right font-bold">{{ total }}</td>
                 </tr>
         </tbody>
     </table>
