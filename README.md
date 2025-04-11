@@ -9,3 +9,5 @@ The customer selects items from a consolidated storefront, and items are later s
 a dynamic split payment is used to effect the payment to each of the partner/retailers.
 
 to see a live demo of the MVP click here [Grundy LLc](https://mohammedh.pythonanywhere.com/)
+
+As is under MIT License
